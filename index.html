@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Subtitle Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        #container {
+            display: flex;
+            flex-direction: row;
+        }
+
+        #left {
+            flex: 1;
+            padding: 20px;
+        }
+
+        #right {
+            flex: 1;
+            padding: 20px;
+        }
+
+        #preview {
+            max-width: 100%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans p-6">
+    <h1 class="text-3xl font-bold mb-4">Danmaku Screenshot Generator</h1>
+    
+    <div id="container">
+        <div id="left">
+            <h2>Image Upload</h2>
+    <input type="file" id="imageUpload" accept="image/*" class="w-full p-2 mb-4 border border-gray-300 rounded">
+    
+            <h2>Subtitles</h2>
+    <textarea id="subtitles" rows="5" placeholder="Enter subtitles here, one per line" class="w-full p-2 mb-4 border border-gray-300 rounded">
+s
+上述
+此方法</textarea>
+    
+            <h2>Font Size</h2>
+    <select id="fontSize" class="w-full p-2 mb-4 border border-gray-300 rounded">
+        <option value="16">16px</option>
+        <option value="20">20px</option>
+        <option value="24">24px</option>
+        <option value="28">28px</option>
+    </select>
+    
+            <h2>Line Spacing</h2>
+    <input type="number" id="lineSpacing" value="1.5" min="1" max="3" step="0.1" class="w-full p-2 mb-4 border border-gray-300 rounded" />
+    
+            <h2>Font Family</h2>
+    <select id="fontFamily" class="w-full p-2 mb-4 border border-gray-300 rounded">
+        <option value="Arial">Arial</option>
+        <option value="Verdana">Verdana</option>
+        <option value="Times New Roman">Times New Roman</option>
+        <option value="Courier">Courier</option>
+    </select>
+    
+            <h2>Font Color</h2>
+    <input type="color" id="fontColor" value="#ffffff" class="w-full p-2 mb-4 border border-gray-300 rounded">
+        </div>
+    
+        <div id="right" class="flex justify-center items-center">
+            <div class="flex flex-col items-center">
+    <canvas id="preview" class="border border-gray-300 rounded"></canvas>
+            <button id="downloadBtn" class="w-full p-2 mt-4 bg-blue-500 text-white rounded">Download Image</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const imageUpload = document.getElementById('imageUpload');
+        const subtitles = document.getElementById('subtitles');
+        const fontSize = document.getElementById('fontSize');
+        const lineSpacing = document.getElementById('lineSpacing');
+        const fontFamily = document.getElementById('fontFamily');
+        const fontColor = document.getElementById('fontColor');
+        const preview = document.getElementById('preview');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const ctx = preview.getContext('2d');
+
+        let img = new Image();
+
+        imageUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+                img.onload = function() {
+                    updateCanvas();
+                }
+                img.src = event.target.result;
+            }
+
+            reader.readAsDataURL(file);
+        });
+
+        [subtitles, fontSize, lineSpacing, fontFamily, fontColor].forEach(element => {
+            element.addEventListener('input', updateCanvas);
+        });
+
+        function updateCanvas() {
+            if (!img.src) return;
+
+            const lines = subtitles.value.split('\n');
+            const lineHeight = parseInt(fontSize.value) + parseInt(lineSpacing.value);
+            const fullHeight = img.height + (lines.length - 1) * lineHeight;
+            
+            preview.width = img.width;
+            preview.height = fullHeight;
+
+            ctx.clearRect(0, 0, preview.width, preview.height);
+
+            // Draw the image
+            const originY = img.height - lineHeight
+            var y = originY;
+            ctx.drawImage(img, 0, 0, img.width, originY, 0, 0, img.width, originY);
+
+            ctx.font = `${fontSize.value}px ${fontFamily.value}`;
+            ctx.fillStyle = fontColor.value; // Set the text color
+            ctx.textAlign = 'center';
+            
+            // draw (the pendding rect) at the bottom of the image
+            // draw the text
+            lines.forEach((line, index) => {
+                ctx.fillRect(0, y, img.width, lineHeight);
+                ctx.drawImage(img, 0, img.height - lineHeight, img.width, lineHeight, 0, y, img.width, lineHeight);
+                ctx.fillText(line, img.width / 2, y + lineHeight - 5);
+                y += lineHeight;
+            });
+
+            
+            downloadBtn.style.display = 'block';
+        }
+
+        downloadBtn.addEventListener('click', function() {
+            const link = document.createElement('a');
+            link.download = 'subtitled_image.png';
+            link.href = preview.toDataURL();
+            link.click();
+        });
+    </script>
+</body>
+</html>
