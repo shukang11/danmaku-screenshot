@@ -12,7 +12,7 @@ export default function DanmakuScreenshot() {
     const [config, setConfig] = useState({
         subtitles: "阿芙  发 \n  你好",
         fontSize: 16,
-        lineSpacing: 0,
+        lineHeight: 20,
         fontFamily: "Arial",
         fontColor: "#ff00ff"
     });
@@ -58,7 +58,7 @@ export default function DanmakuScreenshot() {
         const tempCtx = tempCanvas.getContext("2d");
         if (!tempCtx) return;
 
-        const { subtitles, fontSize, lineSpacing, fontFamily, fontColor } = config;
+        const { subtitles, fontSize, lineHeight: lineSpacing, fontFamily, fontColor } = config;
         const lines = subtitles.split("\n");
         const lineHeight = fontSize + lineSpacing;
         const fullHeight = img.height + lines.length * lineHeight; // 修正 fullHeight 计算
@@ -114,7 +114,6 @@ export default function DanmakuScreenshot() {
                     config={config}
                     setConfig={handleUpdateConfig}
                     handleImageUpload={handleImageUpload}
-                    handleGenerate={() => updateCanvas(imageSrc as HTMLImageElement)}
                 />
                 <Preview canvasRef={canvasRef} handleDownload={handleDownload} />
             </div>

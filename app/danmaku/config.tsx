@@ -11,20 +11,18 @@ interface ConfigProps {
     config: {
         subtitles: string;
         fontSize: number;
-        lineSpacing: number;
+        lineHeight: number;
         fontFamily: string;
         fontColor: string;
     };
     setConfig: (config: Partial<ConfigProps['config']>) => void;
     handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    handleGenerate: () => void; // 添加生成按钮的处理函数
 }
 
 const Config: React.FC<ConfigProps> = ({
     config,
     setConfig,
     handleImageUpload,
-    handleGenerate,
 }) => {
     const form = useForm();
 
@@ -114,16 +112,16 @@ const Config: React.FC<ConfigProps> = ({
                                     name="lineSpacing"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>行间距 (Line spacing)</FormLabel>
+                                            <FormLabel>行高 (Line height)</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type="number"
-                                                    value={config.lineSpacing}
-                                                    onChange={(e) => handleChange('lineSpacing', parseFloat(e.target.value))}
+                                                    value={config.lineHeight}
+                                                    onChange={(e) => handleChange('lineHeight', parseFloat(e.target.value))}
                                                     min="1"
                                                     max="3"
                                                     step="0.1"
-                                                    placeholder="行间距 (Line spacing)"
+                                                    placeholder="行高 (Line height)"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -178,14 +176,12 @@ const Config: React.FC<ConfigProps> = ({
                                 />
                             </div>
                         </FormItem>
-                    )}
+                    )
+                    }
                 />
 
-                <button type="button" onClick={handleGenerate} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">
-                    生成 (Generate)
-                </button>
-            </form>
-        </Form>
+            </form >
+        </Form >
     );
 };
 
